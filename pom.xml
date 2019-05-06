@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--    父类配置依赖-->
+    <parent>
+        <!--分组信息-->
+        <groupId>org.springframework.boot</groupId>
+        <!--项目名-->
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!--版本编号-->
+        <version>2.1.4.RELEASE</version>
+        <!--不设置该标签从本地仓库获取，设置为空从远程仓库获取-->
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>cn.wd</groupId>
+    <artifactId>micro-service-demo</artifactId>
+    <version>V1.0.0.RELEASE</version>
+    <!--maven文档项目名-->
+    <name>micro-service-demo</name>
+    <!--maven文档项目描述-->
+    <description>微服务基础组件模板</description>
+    <packaging>jar</packaging>
+    <!--项目全局自定义属性列表-->
+    <properties>
+        <!--自定义属性java.version,值1.8-->
+        <java.version>1.8</java.version>
+        <logPath>${basedir}/logs</logPath>
+    </properties>
+
+    <!--第三方jar依赖列表-->
+    <dependencies>
+        <!--jar包信息-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <!--默认false 依赖传递，设置为true阻止依赖传递，当有其他项目依赖本项目时，该jar包需要重新声明依赖。-->
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <!--        指定应用范围（测试，编译，打包，运行）
+                        compile 全范围
+                        test 只用于测试 阻止依赖传递
+                        runntime 只不用于编译
+                        provided 只不用于打包，适用于容器自带，或启动时指定外部依赖 阻止依赖传递
+                        system 只不用于打包 与systemPath连用指定jar包地址 阻止依赖传递-->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.47</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <!--全局构建配置，包括打包，插件等信息-->
+    <build>
+        <!--指定最终打包后文件名-->
+        <finalName>${name}</finalName>
+        <!--打包文件存放地址 ${basedir} pom文件所在文件夹-->
+        <directory>${basedir}\target</directory>
+        <!--待过滤属性文件列表-->
+        <filters>
+            <!--单个过滤属性文件-->
+            <filter>${basedir}\src\main\resources\config\global.properties</filter>
+        </filters>
+        <!--资源文件打包配置列表-->
+        <resources>
+            <!--单个配置-->
+            <resource>
+                <!--默认false 是否执行maven过滤替换-->
+                <filtering>true</filtering>
+                <!--指定资源文件目录-->
+                <directory>${basedir}\src\main\resources</directory>
+                <!--资源排除项列表-->
+                <excludes>
+                    <!--单项配置-->
+                    <exclude>config/**</exclude>
+                </excludes>
+                <!--资源载入项列表-->
+                <includes>
+                    <!--载入当前目录资源文件-->
+                    <include>*</include>
+                    <!--载入当前目录下jdbc目录指定文件-->
+                    <include>jdbc/${env}.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <!--插件列表-->
+        <plugins>
+            <!--spring boot 打包插件-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--maven单元测试插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!--插件配置-->
+                <configuration>
+                    <!--执行设置 默认false不跳过 true 跳过-->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!--打包子选项配置列表-->
+    <profiles>
+        <!--单个子选项配置 可以使用全局配置所有标签，并在启用后相冲突时优先级高于全局配置-->
+        <profile>
+            <!--子选项标识 使用时 通过 -P输入-->
+            <id>local</id>
+            <properties>
+                <env>local</env>
+            </properties>
+            <!--子选项额外配置-->
+            <activation>
+                <!--是否激活 默认false 不激活 true 激活-->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <env>test</env>
+                <logPath>/data/logs</logPath>
+            </properties>
+        </profile>
+    </profiles>
+</project>
